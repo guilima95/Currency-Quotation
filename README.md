@@ -1,2 +1,11 @@
-# quotation-euro--real-time
-Azure function in c# responsible for send quotation in real time sending quote value in telegram
+# Quatation Real Time
+
+# How does it work?
+- serveless system that monitors the Euro exchange rate and sends an alert to telegram when the value reaches that which is configured (option configured)
+
+# Deploy
+... 
+
+# Approaches
+...
+
