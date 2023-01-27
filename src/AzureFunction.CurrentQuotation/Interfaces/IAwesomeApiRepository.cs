@@ -3,5 +3,5 @@
 namespace AzureFunction.CurrentQuotation.Interfaces;
 public interface IAwesomeAPIRepository
 {
-    Task<CurrencyResponse> GetQuotationByCurrencyAsync(string currency);
+    Task<TelegramBotResponse> GetQuotationByCurrencyAsync(string currency);
 }

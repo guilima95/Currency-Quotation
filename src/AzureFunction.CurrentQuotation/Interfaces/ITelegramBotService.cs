@@ -1,9 +1,5 @@
-﻿using Telegram.BotAPI.AvailableTypes;
-
-namespace AzureFunction.CurrentQuotation.Interfaces;
+﻿namespace AzureFunction.CurrentQuotation.Interfaces;
 public interface ITelegramBotService
 {
-    Task<User> GetUserTelegramAsync();
-
-    Task SendMessageAsync(string message);
+    Task ProcessBotAsync(string message);
 }

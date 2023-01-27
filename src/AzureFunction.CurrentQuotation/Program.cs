@@ -1,19 +1,41 @@
 using AzureFunction.CurrentQuotation.Interfaces;
 using AzureFunction.CurrentQuotation.Repositories;
 using AzureFunction.CurrentQuotation.Services;
+using AzureFunction.CurrentQuotation.TimerTrigger.Contracts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
+
+public class Program
+{
+
+    public static async Task Main(string[] args)
     {
-        services.AddScoped<IAwesomeAPIRepository, AwesomeAPIRepository>();
-        
-        services.AddHttpClient();
+        var builder = Host
+          .CreateDefaultBuilder(args)
+          .ConfigureFunctionsWorkerDefaults()
+          .ConfigureAppConfiguration((hostingContext, configBuilder) =>
+          {
+              var env = hostingContext.HostingEnvironment;
+              configBuilder
+                .AddJsonFile($"local.settings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"local.settings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+          })
+          .ConfigureServices((appBuilder, services) =>
+          {
+              var configuration = appBuilder.Configuration;
+              services.AddScoped<IAwesomeAPIRepository, AwesomeAPIRepository>();
+              services.AddHttpClient();
+              services.AddSingleton<ITelegramBotService, TelegramBotService>();
 
-        services.AddSingleton<ITelegramBotService, TelegramBotService>();
-    })
-    .Build();
+              services.AddOptions<TelegramSettings>()
+               .Configure<IConfiguration>((settings, configuration) =>
+               {
+                   configuration.GetSection("TelegramSettings").Bind(settings);
+               });
+          });
 
-host.Run();
+        await builder.Build().RunAsync();
+    }
+}

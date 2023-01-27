@@ -7,7 +7,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace AzureFunction.CurrentQuotation.Repositories;
 public class AwesomeAPIRepository : IAwesomeAPIRepository
 {
-    public async Task<CurrencyResponse> GetQuotationByCurrencyAsync(string currency)
+    public async Task<TelegramBotResponse> GetQuotationByCurrencyAsync(string currency)
     {
         string url = $"https://economia.awesomeapi.com.br/last/{currency}";
 
@@ -18,7 +18,7 @@ public class AwesomeAPIRepository : IAwesomeAPIRepository
 
         if (response?.EURBRL is null)
         {
-            return new CurrencyResponse();
+            return new TelegramBotResponse();
         }
 
         return response.EURBRL;
@@ -49,9 +49,9 @@ public class AwesomeAPIRepository : IAwesomeAPIRepository
         [JsonPropertyName("create_date")]
         public string? CreateDate { get; set; }
 
-        public static implicit operator CurrencyResponse(EURBRL eurBrl)
+        public static implicit operator TelegramBotResponse(EURBRL eurBrl)
         {
-            return new CurrencyResponse(
+            return new TelegramBotResponse(
                 eurBrl.Code, eurBrl.High, eurBrl.Low, eurBrl.VarBid, eurBrl.Ask, eurBrl.CreateDate);
         }
     }

@@ -1,25 +1,22 @@
 ﻿using AzureFunction.CurrentQuotation.Interfaces;
+using AzureFunction.CurrentQuotation.TimerTrigger.Contracts;
+using Microsoft.Extensions.Options;
 using Telegram.BotAPI;
 using Telegram.BotAPI.AvailableMethods;
-using Telegram.BotAPI.AvailableTypes;
-using Telegram.BotAPI.GettingUpdates;
 
 namespace AzureFunction.CurrentQuotation.Services;
 public class TelegramBotService : ITelegramBotService
 {
-    private const string BotToken = "5905821203:AAHXgakC03_n4WRy-ho5uQwahf-JHjCW3Dc";
-    private const int MyChat = 595962405;
+    private readonly IOptions<TelegramSettings> _settings;
 
-    public async Task<User> GetUserTelegramAsync()
+    public TelegramBotService(IOptions<TelegramSettings> settings)
     {
-        var api = new BotClient(BotToken);
-        return await api.GetMeAsync();
+        _settings = settings;
     }
 
-    public async Task SendMessageAsync(string message)
+    public async Task ProcessBotAsync(string message)
     {
-        var api = new BotClient(BotToken);
-
-        api.SendMessage(new SendMessageArgs(MyChat, message));
+        BotClient _botClient = new(_settings.Value.Token);
+        await _botClient.SendMessageAsync(_settings.Value.MyChat, $"Attention!!! Euro down: {message}");
     }
 }

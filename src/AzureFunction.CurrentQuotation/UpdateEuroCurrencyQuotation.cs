@@ -1,26 +1,32 @@
-using System;
-using System.Globalization;
 using AzureFunction.CurrentQuotation.Extensions;
 using AzureFunction.CurrentQuotation.Interfaces;
+using AzureFunction.CurrentQuotation.TimerTrigger.Contracts;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AzureFunction.CurrentQuotation
 {
-    public class EuroCurrentQuotation
+    public class UpdateEuroCurrencyQuotation
     {
         private readonly ILogger _logger;
         private readonly IAwesomeAPIRepository _awesomeAPIRepository;
         private readonly ITelegramBotService _telegramBotService;
+        private readonly IOptions<TelegramSettings> _settings;
 
-        public EuroCurrentQuotation(ILoggerFactory loggerFactory, IAwesomeAPIRepository awesomeAPIRepository, ITelegramBotService telegramBotService)
+        public UpdateEuroCurrencyQuotation(
+            ILoggerFactory loggerFactory,
+            IOptions<TelegramSettings> settings,
+            IAwesomeAPIRepository awesomeAPIRepository,
+            ITelegramBotService telegramBotService)
         {
-            _logger = loggerFactory.CreateLogger<EuroCurrentQuotation>();
+            _logger = loggerFactory.CreateLogger<UpdateEuroCurrencyQuotation>();
+            _settings = settings;
             _awesomeAPIRepository = awesomeAPIRepository;
             _telegramBotService = telegramBotService;
         }
 
-        [Function("EuroCurrentQuotation")]
+        [Function("UpdateEuroCurrencyQuotation")]
         public async Task Run([TimerTrigger("* * * * *")] MyInfo myTimer)
         {
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
@@ -29,7 +35,6 @@ namespace AzureFunction.CurrentQuotation
 
             var response = await _awesomeAPIRepository.GetQuotationByCurrencyAsync("EUR-BRL");
 
-            //Send to message for telegram bot if it is the parametered value:
             string? currency = response.Ask?.ToCurrency();
 
             if (string.IsNullOrEmpty(currency))
@@ -37,9 +42,13 @@ namespace AzureFunction.CurrentQuotation
                 currency = string.Empty;
             }
 
+
             string message = $"Currency EUR-BRL: {currency}, Date: {response.CreateDate}";
 
-            await _telegramBotService.SendMessageAsync(message);
+            if (currency == _settings.Value.EURBRLAlert)
+            {
+                await _telegramBotService.ProcessBotAsync(currency);
+            }
 
             _logger.LogInformation(message);
 

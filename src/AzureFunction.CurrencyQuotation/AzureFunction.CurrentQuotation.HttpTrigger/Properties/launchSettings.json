@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "AzureFunction.CurrentQuotation.HttpTrigger": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7179",
+      "launchBrowser": false
+    }
+  }
+}
