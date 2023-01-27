@@ -1,4 +1,4 @@
-# Currency Quotation
+# Currency Quotation EUR-BRL
 # How does it work?
 Serveless system that monitors the Euro exchange rate and sends a Telegram alert when the value reaches what is configured (configured option) I keep track of the EUR-BRL exchange rate through Awesome API.
 
