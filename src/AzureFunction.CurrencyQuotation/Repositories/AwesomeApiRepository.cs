@@ -1,13 +1,13 @@
 ﻿using AzureFunction.CurrentQuotation.Contracts;
 using AzureFunction.CurrentQuotation.Interfaces;
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AzureFunction.CurrentQuotation.Repositories;
 public class AwesomeAPIRepository : IAwesomeAPIRepository
 {
-    public async Task<TelegramBotResponse> GetQuotationByCurrencyAsync(string currency)
+    public async Task<TelegramBotResponse?> GetQuotationByCurrencyAsync(string currency)
     {
         string url = $"https://economia.awesomeapi.com.br/last/{currency}";
 
@@ -22,6 +22,23 @@ public class AwesomeAPIRepository : IAwesomeAPIRepository
         }
 
         return response.EURBRL;
+    }
+
+    public async Task<TelegramBotResponse?> GetQuotationByRangeDateAsync(string currency, DateOnly start, DateOnly end)
+    {
+        string url = $"https://economia.awesomeapi.com.br/json/daily/{currency}?start_date={start:yyyyMMdd}&end_date={end:yyyyMMdd}";
+
+        using HttpClient client = new();
+        var result = await client.GetStringAsync(url);
+
+        var response = JsonSerializer.Deserialize<List<EURBRL>>(json: result);
+
+        if (response is null)
+        {
+            return new EURBRL();
+        }
+
+        return response[0];
     }
 
     public class Response

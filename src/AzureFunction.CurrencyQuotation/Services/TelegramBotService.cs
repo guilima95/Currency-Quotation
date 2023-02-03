@@ -17,6 +17,6 @@ public class TelegramBotService : ITelegramBotService
     public async Task ProcessBotAsync(string message)
     {
         BotClient _botClient = new(_settings.Value.Token);
-        await _botClient.SendMessageAsync(_settings.Value.MyChat, $"Attention!!! Euro down: {message}");
+        await _botClient.SendMessageAsync(_settings.Value.MyChat, message);
     }
 }
