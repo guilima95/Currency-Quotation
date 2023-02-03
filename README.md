@@ -12,9 +12,6 @@ Number that represents your Telegram chat, it is unique and each user has one, i
 # Token:
 When I created the bot from the Telegram documentation, I got the token to use Lib Telegram.BotAPI.
 
-# EURBRLAlert:
-Base value that I want to receive the alert when the Euro arrives.
-
 # Approaches, Technologies ...
 Azure Function type isoleted .NET 7 Function
 Integration with Telegram Bot using Telegram.BotAPI -> https://github.com/Eptagone/Telegram.BotAPI
